@@ -5,7 +5,10 @@ void main() {
   print('--- Calculadora de Expressões ---');
   print('Digite uma expressão matemática ou "sair" para fechar.');
 
-  while (true) {    
+  final parser = GrammarParser();
+  final evaluator = RealEvaluator();
+
+  while (true) {
     String? expressaoString = stdin.readLineSync();
 
     if (expressaoString == null || expressaoString.toLowerCase() == 'sair') {
@@ -14,27 +17,17 @@ void main() {
     }
 
     try {
-      Parser p = Parser();
-      Expression exp = p.parse(expressaoString);
+      Expression exp = parser.parse(expressaoString);
       ContextModel cm = ContextModel();
-      double resultado = exp.evaluate(EvaluationType.REAL, cm);
+      double resultado = evaluator.evaluate(exp).toDouble();
 
-      
-      // Verificamos se o resultado é infinito antes de imprimir.
       if (resultado.isInfinite) {
         print('Erro: Divisão por zero não é permitida.');
-      } 
-      // Bônus: Também podemos verificar se o resultado é "NaN" (Not a Number),
-      // que ocorre em operações como a raiz quadrada de um número negativo.
-      else if (resultado.isNaN) {
+      } else if (resultado.isNaN) {
         print('Erro: A operação resultou em um valor indefinido (NaN).');
-      }
-      // Se não for nenhum dos casos acima, o resultado é válido.
-      else {
+      } else {
         print('O resultado é: $resultado');
       }
-      
-
     } catch (e) {
       print('Expressão inválida. Por favor, tente novamente.');
     }
